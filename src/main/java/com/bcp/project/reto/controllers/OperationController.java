@@ -8,10 +8,7 @@ import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -25,9 +22,9 @@ public class OperationController {
         return "API Rest BCP";
     }
 
-    @GetMapping("/exchange")
-    public Single<ResponseEntity<ExchangeRate>> exchange(@RequestBody ExchangeRate exchangeRate) {
-        return currencyService.getExchangeRate(exchangeRate.getSourceIso(), exchangeRate.getTargetIso(), exchangeRate.getMount())
+    @GetMapping("/exchange/{sourceISO}/{targetISO}/{mount}")
+    public Single<ResponseEntity<ExchangeRate>> exchange(@PathVariable String sourceISO, @PathVariable String targetISO, @PathVariable Double mount) {
+        return currencyService.getExchangeRate(sourceISO, targetISO, mount)
                 .subscribeOn(Schedulers.io())
                 .map(er -> ResponseEntity.created(URI.create("/")).body(er));
     }
