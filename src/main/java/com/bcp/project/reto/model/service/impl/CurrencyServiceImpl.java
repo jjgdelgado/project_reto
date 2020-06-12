@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 @Service
@@ -50,8 +52,8 @@ public class CurrencyServiceImpl implements ICurrencyService {
                 exchangeRate.setMount(mount);
                 exchangeRate.setSourceIso(String.format("%s - %s", sourceCurrency.getIso(), sourceCurrency.getName()));
                 exchangeRate.setTargetIso(String.format("%s - %s", targetCurrency.getIso(), targetCurrency.getName()));
-                exchangeRate.setMountExchange((mount / sourceCurrency.getExchange()) * targetCurrency.getExchange());
-                exchangeRate.setExchangeRate((1 / sourceCurrency.getExchange()) * targetCurrency.getExchange());
+                exchangeRate.setMountExchange(new BigDecimal((mount / sourceCurrency.getExchange()) * targetCurrency.getExchange()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                exchangeRate.setExchangeRate(new BigDecimal((1 / sourceCurrency.getExchange()) * targetCurrency.getExchange()).setScale(2, RoundingMode.HALF_UP).doubleValue());
                 subscriber.onSuccess(exchangeRate);
             }
         });
